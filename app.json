@@ -43,6 +43,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "05551157-ff42-4df0-b204-93c0aea33740"
+      }
+    },
+    "owner": "ovi-dev"
   }
 }
