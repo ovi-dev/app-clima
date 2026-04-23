@@ -4,7 +4,6 @@ import { Button, StyleSheet, Switch, View } from "react-native";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { FormField } from "@/components/ui/form-field";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { TextInputField } from "@/components/ui/text-input-field";
@@ -63,11 +62,11 @@ export default function TabTwoScreen() {
         />
       }
     >
-      <ThemedView style={styles.titleContainer}>
+      <View style={styles.titleContainer}>
         <ThemedText type="title" style={{ fontFamily: Fonts?.rounded }}>
           FormField
         </ThemedText>
-      </ThemedView>
+      </View>
 
       <TextInputField
         control={control}
@@ -135,7 +134,7 @@ export default function TabTwoScreen() {
         rules={numberValidation}
       />
 
-      <ThemedView style={styles.section}>
+      <View style={styles.section}>
         <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
           5. Switch / Toggle
         </ThemedText>
@@ -157,9 +156,9 @@ export default function TabTwoScreen() {
             </View>
           )}
         />
-      </ThemedView>
+      </View>
 
-      <ThemedView style={styles.section}>
+      <View style={styles.section}>
         <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
           6. Checkbox personalizado
         </ThemedText>
@@ -184,7 +183,7 @@ export default function TabTwoScreen() {
             </View>
           )}
         />
-      </ThemedView>
+      </View>
       <Button
         title="Enviar"
         onPress={handleSubmit(onSubmit)}
