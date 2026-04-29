@@ -12,9 +12,7 @@ export const AppThemeColors: ThemedColorsPalette = {
       error: BaseColors.red,
     },
     button: {
-      buttonBackground:
-        process.env.EXPO_PUBLIC_CITY_COLOR_DARK ??
-        BaseColors.defaultCityTintDark,
+      buttonBackground: BaseColors.green,
     },
     textInput: {
       text: BaseColors.slate800,
@@ -30,10 +28,8 @@ export const AppThemeColors: ThemedColorsPalette = {
     },
     splash: {
       background: BaseColors.white,
-      content:
-        process.env.EXPO_PUBLIC_CITY_COLOR_DARK ??
-        BaseColors.defaultCityTintDark,
-      backgroundIcon: `${process.env.EXPO_PUBLIC_CITY_COLOR_DARK ?? BaseColors.defaultCityTintDark}20`,
+      content: BaseColors.defaultCityTintDark,
+      backgroundIcon: `${BaseColors.defaultCityTintDark}20`,
     },
     onboarding: {
       titleText: BaseColors.slate900,
@@ -41,6 +37,8 @@ export const AppThemeColors: ThemedColorsPalette = {
       progressBarBackground: BaseColors.slate200,
     },
   },
+
+  /// Dark theme colors============================================================================================
   dark: {
     baseColors: BaseColors,
     general: {
@@ -51,8 +49,7 @@ export const AppThemeColors: ThemedColorsPalette = {
       error: BaseColors.red,
     },
     button: {
-      buttonBackground:
-        process.env.EXPO_PUBLIC_CITY_COLOR ?? BaseColors.defaultCityTint,
+      buttonBackground: BaseColors.green,
     },
     textInput: {
       text: BaseColors.white,
