@@ -4,11 +4,13 @@ import { Button, StyleSheet, Switch, View } from "react-native";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { FormField } from "@/components/ui/form-field";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { TextInputField } from "@/components/ui/text-input-field";
 import { Fonts } from "@/constants/theme";
+import { useThemeColors } from "@/theme/hooks/useThemeColors";
+import { useWithAppTheme } from "@/theme/hooks/useWithAppTheme";
+import { ThemeColors } from "@/theme/types/themeColors";
 import {
   emailValidation,
   numberValidation,
@@ -26,6 +28,9 @@ type DemoForm = {
 };
 
 export default function TabTwoScreen() {
+  const styles = useWithAppTheme(createStyles);
+  const themeColors = useThemeColors();
+
   const { control, handleSubmit } = useForm<DemoForm>({
     defaultValues: {
       email: "",
@@ -44,21 +49,24 @@ export default function TabTwoScreen() {
 
   return (
     <ParallaxScrollView
-      headerBackgroundColor={{ light: "#D0D0D0", dark: "#353636" }}
+      headerBackgroundColor={{
+        light: themeColors.general.background,
+        dark: themeColors.general.background,
+      }}
       headerImage={
         <IconSymbol
           size={310}
-          color="#808080"
+          color={themeColors.general.textSecondary}
           name="chevron.left.forwardslash.chevron.right"
           style={styles.headerImage}
         />
       }
     >
-      <ThemedView style={styles.titleContainer}>
+      <View style={styles.titleContainer}>
         <ThemedText type="title" style={{ fontFamily: Fonts?.rounded }}>
           FormField
         </ThemedText>
-      </ThemedView>
+      </View>
 
       <TextInputField
         control={control}
@@ -67,7 +75,13 @@ export default function TabTwoScreen() {
         placeholder="Email"
         keyboardType="email-address"
         autoCapitalize="none"
-        leftIcon={<MaterialIcons name="mail-outline" size={18} color="#888" />}
+        leftIcon={
+          <MaterialIcons
+            name="mail-outline"
+            size={18}
+            color={themeColors.general.textSecondary}
+          />
+        }
         rules={emailValidation}
       />
 
@@ -77,9 +91,19 @@ export default function TabTwoScreen() {
         label="2. Input contraseña (secureTextEntry)"
         placeholder="Contraseña"
         secureTextEntry
-        leftIcon={<MaterialIcons name="lock-outline" size={18} color="#888" />}
+        leftIcon={
+          <MaterialIcons
+            name="lock-outline"
+            size={18}
+            color={themeColors.general.textSecondary}
+          />
+        }
         rightIcon={
-          <MaterialIcons name="visibility-off" size={18} color="#888" />
+          <MaterialIcons
+            name="visibility-off"
+            size={18}
+            color={themeColors.general.textSecondary}
+          />
         }
         rules={passwordValidation}
       />
@@ -101,12 +125,16 @@ export default function TabTwoScreen() {
         placeholder="Edad"
         keyboardType="numeric"
         leftIcon={
-          <MaterialIcons name="person-outline" size={18} color="#888" />
+          <MaterialIcons
+            name="person-outline"
+            size={18}
+            color={themeColors.general.textSecondary}
+          />
         }
         rules={numberValidation}
       />
 
-      <ThemedView style={styles.section}>
+      <View style={styles.section}>
         <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
           5. Switch / Toggle
         </ThemedText>
@@ -116,13 +144,21 @@ export default function TabTwoScreen() {
           render={({ value, onChange }) => (
             <View style={styles.row}>
               <ThemedText>Activar notificaciones</ThemedText>
-              <Switch value={value} onValueChange={onChange} />
+              <Switch
+                value={value}
+                onValueChange={onChange}
+                trackColor={{
+                  false: themeColors.general.textSecondary,
+                  true: themeColors.button.buttonBackground,
+                }}
+                thumbColor={value ? themeColors.general.background : undefined}
+              />
             </View>
           )}
         />
-      </ThemedView>
+      </View>
 
-      <ThemedView style={styles.section}>
+      <View style={styles.section}>
         <ThemedText type="defaultSemiBold" style={styles.sectionTitle}>
           6. Checkbox personalizado
         </ThemedText>
@@ -147,62 +183,52 @@ export default function TabTwoScreen() {
             </View>
           )}
         />
-      </ThemedView>
-      <Button title="Enviar" onPress={handleSubmit(onSubmit)} />
+      </View>
+      <Button
+        title="Enviar"
+        onPress={handleSubmit(onSubmit)}
+        color={themeColors.button.buttonBackground}
+      />
     </ParallaxScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: "#808080",
-    bottom: -90,
-    left: -35,
-    position: "absolute",
-  },
-  titleContainer: {
-    flexDirection: "row",
-    gap: 8,
-  },
-  section: {
-    gap: 6,
-  },
-  sectionTitle: {
-    marginBottom: 4,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    fontSize: 15,
-    color: "#11181C",
-    backgroundColor: "#fff",
-  },
-  textarea: {
-    height: 90,
-    textAlignVertical: "top",
-  },
-  errorText: {
-    color: "red",
-    fontSize: 12,
-    marginTop: 4,
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: 8,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 2,
-    borderColor: "#0a7ea4",
-    borderRadius: 4,
-  },
-  checkboxChecked: {
-    backgroundColor: "#0a7ea4",
-  },
-});
+const createStyles = (themeColors: ThemeColors) =>
+  StyleSheet.create({
+    headerImage: {
+      bottom: -90,
+      left: -35,
+      position: "absolute",
+    },
+    titleContainer: {
+      flexDirection: "row",
+      gap: 8,
+    },
+    section: {
+      gap: 6,
+    },
+    sectionTitle: {
+      marginBottom: 4,
+    },
+    errorText: {
+      fontSize: 12,
+      marginTop: 4,
+      color: themeColors.general.error,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: 8,
+    },
+    checkbox: {
+      width: 20,
+      height: 20,
+      borderWidth: 2,
+      borderRadius: 4,
+      borderColor: themeColors.button.buttonBackground,
+    },
+    checkboxChecked: {
+      backgroundColor: themeColors.button.buttonBackground,
+    },
+  });
