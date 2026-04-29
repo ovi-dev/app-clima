@@ -1,44 +1,39 @@
 /**
  * All different colors that the app uses.
+ * Updated with a weather-themed palette.
  */
 export const BaseColors = {
-  // App palette
+  // Brand / Weather Colors
+  skyBlueLight: '#38BDF8', // Clear day light
+  skyBlue: '#0EA5E9',      // Sunny sky
+  skyBlueDark: '#0284C7',  // Deep blue sky
+  sunYellow: '#FACC15',    // Sun / warning
+  sunsetOrange: '#FB923C', // Sunsets / hot temps
+  cloudWhite: '#F0F9FF',   // Fluffy clouds
+  rainBlue: '#3B82F6',     // Rain / water drops
+  stormGray: '#64748B',    // Overcast / stormy
+  nightNavy: '#0F172A',    // Very dark night sky
+
+  // Standard
   white: '#FFFFFF',
-  border: '#EAECF0',
-  orange: '#F17B4B',
-  red: '#FF3B30',
-  yellow: '#E3B500',
-  green: '#299E46',
-  mint: '#2DE6D7',
-  darkMint: '#6DDFD5',
-  teal: '#30B0C7',
-  cyan: '#32ADE6',
-  blue: '#007AFF',
-  purple: '#AF52DE',
-  pink: '#FF4D8A',
-  navy: '#0F1A2F',
   black: '#000000',
+  red: '#EF4444',          // Errors / extreme heat
+  green: '#10B981',        // Success / good air quality
   transparent: '#00000000',
-  transparentBlack50: '#00000050',
-  transparentBlack99: '#00000099',
-  greenblue: '#D9FFFC',
-  darkGreenblue: '#3B4545',
-  redWine: '#F1ABC1FF',
 
-  blueGrey: '#0F1A2F',
-  blueGrey900: '#343948',
-  blueGrey800: '#454B5C',
-  blueGrey700: '#585E71',
-  blueGrey600: '#6B7286',
-  blueGrey500: '#7F869B',
-  blueGrey400: '#949BB0',
-  blueGrey300: '#AAB0C5',
-  blueGrey200: '#C0C6DA',
-  blueGrey100: '#D7DCEF',
-  blueGrey50: '#E9E9EF',
-  gray: '#EAECF0',
+  // Neutrals (Slate / Cool Blue-Gray scale for weather UI)
+  slate50: '#F8FAFC',
+  slate100: '#F1F5F9',
+  slate200: '#E2E8F0',
+  slate300: '#CBD5E1',
+  slate400: '#94A3B8',
+  slate500: '#64748B',
+  slate600: '#475569',
+  slate700: '#334155',
+  slate800: '#1E293B',
+  slate900: '#0F172A',
 
-  // City tints
-  defaultCityTint: '#2DE6D7', // mint
-  defaultCityTintDark: '#6DDFD5', // dark mint
+  // City tints (Primary Actions)
+  defaultCityTint: '#0EA5E9', // skyBlue
+  defaultCityTintDark: '#0284C7', // skyBlueDark
 };
