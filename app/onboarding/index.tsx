@@ -20,23 +20,23 @@ import { ThemeColors } from "@/theme/types/themeColors";
 const STEPS = [
   {
     key: "1",
-    title: "Bienvenido a app-clima",
+    title: "Tu clima, claro y a tiempo",
     subtitle:
-      "Consulta el clima de tu ciudad en tiempo real con una interfaz hermosa y precisa.",
+      "Consulta el tiempo actual, la temperatura y los cambios del dia con una experiencia visual simple, amigable y pensada para entender el clima de un vistazo.",
     icon: "cloud.sun.fill" as const,
   },
   {
     key: "2",
-    title: "Siempre preparado",
+    title: "Alertas que te ayudan a anticiparte",
     subtitle:
-      "Guarda tus ubicaciones frecuentes y accede rápidamente al pronóstico desde tus favoritos.",
+      "Recibe avisos de calor intenso, frio extremo y cambios importantes en el pronostico para actuar antes de que el clima te tome por sorpresa.",
     icon: "star.fill" as const,
   },
   {
     key: "3",
-    title: "Explora el mundo",
+    title: "Pronosticos por hora, por dia y en otras ciudades",
     subtitle:
-      "Revisa mapas dinámicos y condiciones climatológicas en cualquier lugar del planeta. ¿Comenzamos?",
+      "Consulta temperaturas por hora, el resumen de los proximos dias y compara el clima de otras ciudades con una interfaz mas cercana y facil de usar. ¿Comenzamos?",
     icon: "map.fill" as const,
   },
 ];
