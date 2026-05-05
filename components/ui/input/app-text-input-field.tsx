@@ -3,11 +3,11 @@ import { Control, FieldValues, Path, RegisterOptions } from "react-hook-form";
 import { StyleSheet, TextInput, TextInputProps, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
-import { FormField } from "@/components/ui/form-field";
+import { FormField } from "@/components/ui/input/base-form-field";
 import { useThemeColors } from "@/theme/hooks/useThemeColors";
 import { useWithAppTheme } from "@/theme/hooks/useWithAppTheme";
 import { ThemeColors } from "@/theme/types/themeColors";
-import { ThemedView } from "../themed-view";
+import { ThemedView } from "../../themed-view";
 
 type TextInputFieldProps<T extends FieldValues> = {
   control: Control<T>;

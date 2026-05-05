@@ -4,9 +4,9 @@ import { Button, StyleSheet, Switch, View } from "react-native";
 
 import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
-import { FormField } from "@/components/ui/form-field";
 import { IconSymbol } from "@/components/ui/icon-symbol";
-import { TextInputField } from "@/components/ui/text-input-field";
+import { TextInputField } from "@/components/ui/input/app-text-input-field";
+import { FormField } from "@/components/ui/input/base-form-field";
 import { Fonts } from "@/constants/theme";
 import { useThemeColors } from "@/theme/hooks/useThemeColors";
 import { useWithAppTheme } from "@/theme/hooks/useWithAppTheme";

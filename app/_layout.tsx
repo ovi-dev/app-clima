@@ -4,17 +4,20 @@ import {
   Theme,
   ThemeProvider,
 } from "@react-navigation/native";
+import { useFonts } from "expo-font";
 import { Redirect, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
 import { useEffect } from "react";
 import "react-native-reanimated";
 
+import { fontConfig } from "@/constants/fontConfig";
 import { useOnboarding } from "@/hooks/use-onboarding";
 import { useColorScheme } from "@/theme/hooks/useColorScheme";
 import { useThemeColors } from "@/theme/hooks/useThemeColors";
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts(fontConfig);
   const colorScheme = useColorScheme();
   const themeColors = useThemeColors();
   const { completed } = useOnboarding();
@@ -33,7 +36,7 @@ export default function RootLayout() {
     SystemUI.setBackgroundColorAsync(themeColors.general.background);
   }, [themeColors.general.background]);
 
-  if (completed === null) return null;
+  if (!fontsLoaded || completed === null) return null;
 
   return (
     <ThemeProvider value={navigationTheme}>
