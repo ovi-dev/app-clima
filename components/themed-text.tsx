@@ -39,26 +39,26 @@ const styles = StyleSheet.create({
   default: {
     fontSize: 16,
     lineHeight: 24,
-    fontFamily: Fonts.LexendRegular,
+    fontFamily: Fonts.OverpassRegular,
   },
   defaultSemiBold: {
     fontSize: 16,
     lineHeight: 24,
-    fontFamily: Fonts.LexendSemiBold,
+    fontFamily: Fonts.OverpassSemiBold,
   },
   title: {
     fontSize: 32,
     lineHeight: 32,
-    fontFamily: Fonts.LexendBold,
+    fontFamily: Fonts.OverpassBold,
   },
   subtitle: {
     fontSize: 20,
-    fontFamily: Fonts.LexendMedium,
+    fontFamily: Fonts.OverpassMedium,
   },
   link: {
     lineHeight: 30,
     fontSize: 16,
     color: "#0a7ea4",
-    fontFamily: Fonts.LexendRegular,
+    fontFamily: Fonts.OverpassRegular,
   },
 });
