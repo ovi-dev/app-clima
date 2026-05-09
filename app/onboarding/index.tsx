@@ -1,13 +1,12 @@
 import { useRouter } from "expo-router";
 import { useRef, useState } from "react";
-import {
-  Animated,
-  FlatList,
-  StyleSheet,
-  useWindowDimensions,
-  View,
-  ViewToken,
-} from "react-native";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
+import { useSharedValue } from "react-native-reanimated";
+import Carousel, {
+  ICarouselInstance,
+  Pagination,
+} from "react-native-reanimated-carousel";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/themed-text";
 import { AppButton } from "@/components/ui/Button/app-button";
@@ -44,23 +43,30 @@ const STEPS = [
 export default function OnboardingScreen() {
   const styles = useWithAppTheme(createStyles);
   const themeColors = useThemeColors();
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
 
-  const [step, setStep] = useState(0);
-  const { completeOnboarding } = useOnboarding();
   const router = useRouter();
-  const { width } = useWindowDimensions();
-  const flatListRef = useRef<FlatList>(null);
-  const scrollX = useRef(new Animated.Value(0)).current;
+  const { completeOnboarding } = useOnboarding();
+
+  const carouselRef = useRef<ICarouselInstance>(null);
+  const progress = useSharedValue(0);
+  const [step, setStep] = useState(0);
 
   const isLast = step === STEPS.length - 1;
+  const carouselHeight = Math.min(Math.max(height * 0.58, 420), 540);
 
   const handleNext = async () => {
     if (isLast) {
       await completeOnboarding();
       router.replace("/(tabs)");
-    } else {
-      flatListRef.current?.scrollToIndex({ index: step + 1, animated: true });
+      return;
     }
+
+    carouselRef.current?.scrollTo({
+      count: 1,
+      animated: true,
+    });
   };
 
   const handleSkip = async () => {
@@ -68,61 +74,28 @@ export default function OnboardingScreen() {
     router.replace("/(tabs)");
   };
 
-  const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      if (viewableItems[0] && viewableItems[0].index !== null) {
-        setStep(viewableItems[0].index);
-      }
-    },
-  ).current;
-
-  const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
-
   return (
     <View style={styles.container}>
-      {/* Botón de Saltar */}
-
-      {/* Slider */}
-      <Animated.FlatList
-        ref={flatListRef}
-        data={STEPS}
-        keyExtractor={(item) => item.key}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        bounces={false}
-        onScroll={Animated.event(
-          [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-          { useNativeDriver: false }, // false porque animamos dimensiones de width y backgroundColor
-        )}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewConfig}
-        renderItem={({ item, index }) => {
-          // Parallax y desvanecimiento
-          const inputRange = [
-            (index - 1) * width,
-            index * width,
-            (index + 1) * width,
-          ];
-          const scale = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.7, 1, 0.7],
-            extrapolate: "clamp",
-          });
-          const opacity = scrollX.interpolate({
-            inputRange,
-            outputRange: [0.3, 1, 0.3],
-            extrapolate: "clamp",
-          });
-
-          return (
+      <View style={styles.carouselWrapper}>
+        <Carousel
+          ref={carouselRef}
+          loop={false}
+          width={width}
+          height={carouselHeight}
+          data={STEPS}
+          pagingEnabled
+          snapEnabled
+          onSnapToItem={setStep}
+          onProgressChange={progress}
+          style={styles.carousel}
+          mode="parallax"
+          modeConfig={{
+            parallaxScrollingScale: 0.92,
+            parallaxScrollingOffset: 50,
+          }}
+          renderItem={({ item }) => (
             <View style={[styles.page, { width }]}>
-              <Animated.View
-                style={[
-                  styles.imageContainer,
-                  { transform: [{ scale }], opacity },
-                ]}
-              >
+              <View style={styles.imageContainer}>
                 <View style={styles.iconCircle}>
                   <IconSymbol
                     name={item.icon}
@@ -130,7 +103,8 @@ export default function OnboardingScreen() {
                     color={themeColors.general.background}
                   />
                 </View>
-              </Animated.View>
+              </View>
+
               <View style={styles.textContainer}>
                 <ThemedText type="title" style={styles.title}>
                   {item.title}
@@ -138,39 +112,37 @@ export default function OnboardingScreen() {
                 <ThemedText style={styles.subtitle}>{item.subtitle}</ThemedText>
               </View>
             </View>
-          );
-        }}
-      />
+          )}
+        />
+      </View>
 
-      {/* Controles: Dots y Botón */}
-      <View style={styles.footer}>
-        <View style={styles.pagination}>
-          {STEPS.map((_, i) => {
-            const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
-            const dotWidth = scrollX.interpolate({
-              inputRange,
-              outputRange: [8, 10, 8],
-              extrapolate: "clamp",
+      <View
+        style={[
+          styles.footer,
+          { paddingBottom: Math.max(insets.bottom + 20, 32) },
+        ]}
+      >
+        <Pagination.Basic
+          progress={progress}
+          data={STEPS}
+          dotStyle={styles.dot}
+          activeDotStyle={styles.activeDot}
+          containerStyle={styles.pagination}
+          onPress={(index) => {
+            carouselRef.current?.scrollTo({
+              count: index - step,
+              animated: true,
             });
-            const opacity = scrollX.interpolate({
-              inputRange,
-              outputRange: [0.3, 1, 0.3],
-              extrapolate: "clamp",
-            });
-            return (
-              <Animated.View
-                key={i}
-                style={[styles.dot, { width: dotWidth, opacity }]}
-              />
-            );
-          })}
-        </View>
+          }}
+        />
+
         <AppButton
           label={isLast ? "Comenzar" : "Siguiente"}
           onPress={handleNext}
           variant="primary"
         />
-        <AppButton label={"Saltar"} onPress={handleSkip} variant="ghost" />
+
+        <AppButton label="Saltar" onPress={handleSkip} variant="ghost" />
       </View>
     </View>
   );
@@ -182,28 +154,22 @@ const createStyles = (Color: ThemeColors) =>
       flex: 1,
       backgroundColor: Color.general.background,
     },
-    header: {
-      flexDirection: "row",
-      justifyContent: "flex-end",
-      paddingHorizontal: 24,
-      paddingTop: 60,
-      height: 100,
+    carouselWrapper: {
+      flex: 1,
+      justifyContent: "center",
     },
-    skipButton: {
-      padding: 10,
-    },
-    skipText: {
-      color: Color.general.textSecondary,
-      fontSize: 16,
-      fontWeight: "600",
+    carousel: {
+      width: "100%",
     },
     page: {
       flex: 1,
       alignItems: "center",
       paddingHorizontal: 32,
+      paddingTop: 12,
+      justifyContent: "center",
     },
     imageContainer: {
-      flex: 0.55,
+      flex: 0.58,
       justifyContent: "center",
       alignItems: "center",
       width: "100%",
@@ -222,9 +188,11 @@ const createStyles = (Color: ThemeColors) =>
       elevation: 10,
     },
     textContainer: {
-      flex: 0.45,
+      flex: 0.42,
       alignItems: "center",
-      paddingTop: 20,
+      justifyContent: "flex-start",
+      width: "100%",
+      paddingTop: 12,
     },
     title: {
       color: Color.onboarding.titleText,
@@ -238,39 +206,30 @@ const createStyles = (Color: ThemeColors) =>
       fontSize: 16,
       lineHeight: 24,
       textAlign: "center",
+      maxWidth: 320,
     },
     footer: {
       paddingHorizontal: 32,
-      paddingBottom: 60,
-      paddingTop: 20,
+      paddingTop: 12,
+      gap: 18,
     },
     pagination: {
-      flexDirection: "row",
       justifyContent: "center",
       alignItems: "center",
-      marginBottom: 32,
-      height: 10,
+      gap: 8,
+      minHeight: 12,
     },
     dot: {
-      height: 10,
-      borderRadius: 5,
+      width: 8,
+      height: 8,
+      borderRadius: 999,
       backgroundColor: Color.button.buttonBackground,
-      marginHorizontal: 4,
+      opacity: 0.35,
     },
-    button: {
+    activeDot: {
+      width: 18,
+      height: 8,
+      borderRadius: 999,
       backgroundColor: Color.button.buttonBackground,
-      paddingVertical: 18,
-      borderRadius: 16,
-      alignItems: "center",
-      shadowColor: Color.button.buttonBackground,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 5,
-    },
-    buttonText: {
-      color: Color.general.background,
-      fontWeight: "bold",
-      fontSize: 18,
     },
   });
