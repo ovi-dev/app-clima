@@ -1,3 +1,12 @@
+// ─── Ciudad guardada ───────────────────────────────────────────────────────
+export interface SavedCity {
+  id: string;
+  name: string;
+  lat: number;
+  lon: number;
+  country?: string;
+}
+
 // ─── Parámetros de búsqueda ────────────────────────────────────────────────
 // Puedes buscar por coordenadas (GPS) o por nombre de ciudad.
 // TypeScript te obliga a elegir uno de los dos, nunca los dos a la vez.

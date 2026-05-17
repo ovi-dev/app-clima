@@ -6,6 +6,6 @@ import { ThemeColors } from '../types/themeColors';
  * Return all the theme colors depending on the current color scheme.
  */
 export const useThemeColors = (): ThemeColors => {
-  const themeColorScheme = useColorScheme();
-  return AppThemeColors[themeColorScheme];
+  const themeColorScheme = useColorScheme() ?? 'light';
+  return AppThemeColors[themeColorScheme as 'light' | 'dark'];
 };

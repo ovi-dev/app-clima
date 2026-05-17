@@ -1,31 +1,36 @@
 /**
  * All different colors that the app uses.
- * Updated with a weather-themed palette.
+ * Updated with an ultra-modern 2026 weather-themed palette.
  */
 export const BaseColors = {
-  // theme colors claro
-  white: "#f9f5f5",
+  // Light Theme Colors
+  white: "#FFFFFF",
+  offWhite: "#FAFAFA",
 
-  // theme colors oscuro
-  nightNavy: "#0F172A", // Very dark night sky
-
-  // Brand / Weather Colors
-  skyBlueLight: "#38BDF8", // Clear day light
-  skyBlue: "#0EA5E9", // Sunny sky
-  skyBlueDark: "#0284C7", // Deep blue sky
-  sunYellow: "#FACC15", // Sun / warning
-  sunsetOrange: "#FB923C", // Sunsets / hot temps
-  cloudWhite: "#F0F9FF", // Fluffy clouds
-  rainBlue: "#3B82F6", // Rain / water drops
-  stormGray: "#64748B", // Overcast / stormy
+  // Dark Theme Colors
+  nightNavy: "#0B0F19", // Deep 2026 dark mode
+  obsidian: "#121826", // Slightly elevated
+  deepSpace: "#1A2235", // Elevated cards
+  
+  // Brand / Weather Colors (Vibrant, Neon-infused)
+  skyBlueLight: "#38BDF8", // Clear day
+  skyBlue: "#0EA5E9", // Base blue
+  skyBlueDark: "#0284C7", // Deep blue
+  neonCyan: "#00F0FF", // Accent cyber cyan
+  
+  sunYellow: "#FFD600", // Vibrant sun
+  sunsetOrange: "#FF5F15", // Warm sunset
+  cloudWhite: "#F8FAFC", 
+  rainBlue: "#2563EB", 
+  stormGray: "#475569", 
 
   // Standard
   black: "#000000",
-  red: "#EF4444", // Errors / extreme heat
-  green: "#10B981", // Success / good air quality
-  transparent: "#00000000",
+  red: "#FF3B30", // Professional vibrant red
+  green: "#34C759", // Professional vibrant green
+  transparent: "transparent",
 
-  // Neutrals (Slate / Cool Blue-Gray scale for weather UI)
+  // Neutrals (Cool Gray / Slate scale)
   slate50: "#F8FAFC",
   slate100: "#F1F5F9",
   slate200: "#E2E8F0",
@@ -36,8 +41,9 @@ export const BaseColors = {
   slate700: "#334155",
   slate800: "#1E293B",
   slate900: "#0F172A",
+  slate950: "#020617",
 
-  // City tints (Primary Actions)
-  defaultCityTint: "#0EA5E9", // skyBlue
-  defaultCityTintDark: "#0284C7", // skyBlueDark
+  // City tints
+  defaultCityTint: "#0EA5E9", 
+  defaultCityTintDark: "#0284C7", 
 };
