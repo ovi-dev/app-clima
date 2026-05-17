@@ -1,42 +1,40 @@
-import { useRouter } from "expo-router";
-import { useRef, useState } from "react";
-import { StyleSheet, useWindowDimensions, View } from "react-native";
-import { useSharedValue } from "react-native-reanimated";
-import Carousel, {
-  ICarouselInstance,
-  Pagination,
-} from "react-native-reanimated-carousel";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
+import { useRef, useState } from 'react';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { useSharedValue } from 'react-native-reanimated';
+import Carousel, { ICarouselInstance, Pagination } from 'react-native-reanimated-carousel';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { ThemedText } from "@/components/themed-text";
-import { AppButton } from "@/components/ui/Button/app-button";
-import { IconSymbol } from "@/components/ui/icon-symbol";
-import { useOnboarding } from "@/hooks/use-onboarding";
-import { useThemeColors } from "@/theme/hooks/useThemeColors";
-import { useWithAppTheme } from "@/theme/hooks/useWithAppTheme";
-import { ThemeColors } from "@/theme/types/themeColors";
+import { ThemedText } from '@/components/themed-text';
+import { AppButton } from '@/components/ui/Button/app-button';
+import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useOnboarding } from '@/hooks/use-onboarding';
+import { useThemeColors } from '@/theme/hooks/useThemeColors';
+import { useWithAppTheme } from '@/theme/hooks/useWithAppTheme';
+import { ThemeColors } from '@/theme/types/themeColors';
 
 const STEPS = [
   {
-    key: "1",
-    title: "Tu clima, claro y a tiempo",
+    key: '1',
+    title: 'Tu clima, claro y a tiempo',
     subtitle:
-      "Consulta el tiempo actual, la temperatura y los cambios del dia con una experiencia visual simple, amigable y pensada para entender el clima de un vistazo.",
-    icon: "cloud.sun.fill" as const,
+      'Consulta el tiempo actual, la temperatura y los cambios del dia con una experiencia visual simple, amigable y pensada para entender el clima de un vistazo.',
+    icon: 'cloud.sun.fill' as const,
   },
   {
-    key: "2",
-    title: "Alertas que te ayudan a anticiparte",
+    key: '2',
+    title: 'Alertas que te ayudan a anticiparte',
     subtitle:
-      "Recibe avisos de calor intenso, frio extremo y cambios importantes en el pronostico para actuar antes de que el clima te tome por sorpresa.",
-    icon: "star.fill" as const,
+      'Recibe avisos de calor intenso, frio extremo y cambios importantes en el pronostico para actuar antes de que el clima te tome por sorpresa.',
+    icon: 'star.fill' as const,
   },
   {
-    key: "3",
-    title: "Pronosticos por hora, por dia y en otras ciudades",
+    key: '3',
+    title: 'Pronosticos por hora, por dia y en otras ciudades',
     subtitle:
-      "Consulta temperaturas por hora, el resumen de los proximos dias y compara el clima de otras ciudades con una interfaz mas cercana y facil de usar. ¿Comenzamos?",
-    icon: "map.fill" as const,
+      'Consulta temperaturas por hora, el resumen de los proximos dias y compara el clima de otras ciudades con una interfaz mas cercana y facil de usar. ¿Comenzamos?',
+    icon: 'map.fill' as const,
   },
 ];
 
@@ -47,7 +45,7 @@ export default function OnboardingScreen() {
   const insets = useSafeAreaInsets();
 
   const router = useRouter();
-  const { completeOnboarding } = useOnboarding();
+  const { completeOnboarding: completarOnboarding } = useOnboarding();
 
   const carouselRef = useRef<ICarouselInstance>(null);
   const progress = useSharedValue(0);
@@ -58,8 +56,8 @@ export default function OnboardingScreen() {
 
   const handleNext = async () => {
     if (isLast) {
-      await completeOnboarding();
-      router.replace("/(tabs)");
+      await completarOnboarding();
+      router.replace('/(tabs)');
       return;
     }
 
@@ -70,12 +68,17 @@ export default function OnboardingScreen() {
   };
 
   const handleSkip = async () => {
-    await completeOnboarding();
-    router.replace("/(tabs)");
+    await completarOnboarding();
+    router.replace('/(tabs)');
   };
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require('@/assets/images/fondoOnboardingBg.svg')}
+        style={StyleSheet.absoluteFill}
+        contentFit="fill"
+      />
       <View style={styles.carouselWrapper}>
         <Carousel
           ref={carouselRef}
@@ -97,11 +100,7 @@ export default function OnboardingScreen() {
             <View style={[styles.page, { width }]}>
               <View style={styles.imageContainer}>
                 <View style={styles.iconCircle}>
-                  <IconSymbol
-                    name={item.icon}
-                    size={100}
-                    color={themeColors.general.background}
-                  />
+                  <IconSymbol name={item.icon} size={100} color={themeColors.general.background} />
                 </View>
               </View>
 
@@ -116,19 +115,14 @@ export default function OnboardingScreen() {
         />
       </View>
 
-      <View
-        style={[
-          styles.footer,
-          { paddingBottom: Math.max(insets.bottom + 20, 32) },
-        ]}
-      >
+      <View style={[styles.footer, { paddingBottom: Math.max(insets.bottom + 20, 32) }]}>
         <Pagination.Basic
           progress={progress}
           data={STEPS}
           dotStyle={styles.dot}
           activeDotStyle={styles.activeDot}
           containerStyle={styles.pagination}
-          onPress={(index) => {
+          onPress={index => {
             carouselRef.current?.scrollTo({
               count: index - step,
               animated: true,
@@ -136,11 +130,7 @@ export default function OnboardingScreen() {
           }}
         />
 
-        <AppButton
-          label={isLast ? "Comenzar" : "Siguiente"}
-          onPress={handleNext}
-          variant="primary"
-        />
+        <AppButton label={isLast ? 'Comenzar' : 'Siguiente'} onPress={handleNext} variant="primary" />
 
         <AppButton label="Saltar" onPress={handleSkip} variant="ghost" />
       </View>
@@ -152,35 +142,35 @@ const createStyles = (Color: ThemeColors) =>
   StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: Color.general.background,
+      backgroundColor: 'transparent',
     },
     carouselWrapper: {
       flex: 1,
-      justifyContent: "center",
+      justifyContent: 'center',
     },
     carousel: {
-      width: "100%",
+      width: '100%',
     },
     page: {
       flex: 1,
-      alignItems: "center",
+      alignItems: 'center',
       paddingHorizontal: 32,
       paddingTop: 12,
-      justifyContent: "center",
+      justifyContent: 'center',
     },
     imageContainer: {
       flex: 0.58,
-      justifyContent: "center",
-      alignItems: "center",
-      width: "100%",
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: '100%',
     },
     iconCircle: {
       width: 220,
       height: 220,
       borderRadius: 110,
       backgroundColor: Color.button.buttonBackground,
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
       shadowColor: Color.button.buttonBackground,
       shadowOffset: { width: 0, height: 10 },
       shadowOpacity: 0.25,
@@ -189,23 +179,23 @@ const createStyles = (Color: ThemeColors) =>
     },
     textContainer: {
       flex: 0.42,
-      alignItems: "center",
-      justifyContent: "flex-start",
-      width: "100%",
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+      width: '100%',
       paddingTop: 12,
     },
     title: {
       color: Color.onboarding.titleText,
       fontSize: 28,
-      fontWeight: "bold",
-      textAlign: "center",
+      fontWeight: 'bold',
+      textAlign: 'center',
       marginBottom: 16,
     },
     subtitle: {
       color: Color.onboarding.subtitleText,
       fontSize: 16,
       lineHeight: 24,
-      textAlign: "center",
+      textAlign: 'center',
       maxWidth: 320,
     },
     footer: {
@@ -214,8 +204,8 @@ const createStyles = (Color: ThemeColors) =>
       gap: 18,
     },
     pagination: {
-      justifyContent: "center",
-      alignItems: "center",
+      justifyContent: 'center',
+      alignItems: 'center',
       gap: 8,
       minHeight: 12,
     },
