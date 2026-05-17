@@ -16,3 +16,15 @@ export function HapticTab(props: BottomTabBarButtonProps) {
     />
   );
 }
+
+/**
+ * HapticTab
+ *
+ * Reemplazo del botón de tab de la barra de navegación inferior que añade
+ * vibración háptica suave (Light) al presionar en iOS. En otras plataformas
+ * se comporta igual que el botón nativo.
+ *
+ * @example
+ * // En el layout de tabs:
+ * <Tabs screenOptions={{ tabBarButton: HapticTab }} />
+ */

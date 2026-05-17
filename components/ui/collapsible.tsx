@@ -47,3 +47,19 @@
 //     marginLeft: 24,
 //   },
 // });
+
+/**
+ * Collapsible
+ *
+ * Sección plegable con un título y una flecha giratoria como indicador.
+ * Al presionar el encabezado, el contenido se expande o colapsa.
+ * Usa el tema activo para el color del ícono.
+ *
+ * @prop title    - Texto del encabezado clickeable.
+ * @prop children - Contenido que se muestra u oculta.
+ *
+ * @example
+ * <Collapsible title="Ver más detalles">
+ *   <ThemedText>Aquí va el contenido oculto.</ThemedText>
+ * </Collapsible>
+ */

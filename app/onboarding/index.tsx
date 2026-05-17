@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { AppButton } from '@/components/ui/Button/app-button';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { IconSymbol } from '@/components/ui/Icon/icon-symbol';
 import { useOnboarding } from '@/hooks/use-onboarding';
 import { useThemeColors } from '@/theme/hooks/useThemeColors';
 import { useWithAppTheme } from '@/theme/hooks/useWithAppTheme';

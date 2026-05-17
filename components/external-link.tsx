@@ -10,7 +10,7 @@ export function ExternalLink({ href, ...rest }: Props) {
       target="_blank"
       {...rest}
       href={href}
-      onPress={async (event) => {
+      onPress={async event => {
         if (process.env.EXPO_OS !== 'web') {
           // Prevent the default behavior of linking to the default browser on native.
           event.preventDefault();
@@ -23,3 +23,16 @@ export function ExternalLink({ href, ...rest }: Props) {
     />
   );
 }
+
+/**
+ * ExternalLink
+ *
+ * Wrapper sobre el componente `Link` de expo-router que abre URLs externas
+ * en un navegador in-app (expo-web-browser) en iOS/Android, y en una pestaña
+ * nueva en web.
+ *
+ * @example
+ * <ExternalLink href="https://ejemplo.com">
+ *   <Text>Abrir sitio</Text>
+ * </ExternalLink>
+ */

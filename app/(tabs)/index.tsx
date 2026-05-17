@@ -1,18 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
+import LottieView, { type AnimationObject } from 'lottie-react-native';
 import { useCallback, useRef, useState } from 'react';
-import {
-  ActivityIndicator,
-  Animated,
-  Dimensions,
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
-} from 'react-native';
+import { Animated, Dimensions, Pressable, RefreshControl, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useCurrentWeather } from '@/hooks/use-weather';
@@ -25,7 +16,8 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 type Gradient = readonly [string, string, ...string[]];
 
 interface WeatherTheme {
-  emoji: string;
+  emoji?: string;
+  lottie?: AnimationObject;
   gradient: Gradient;
   accentColor: string;
   label: string;
@@ -33,21 +25,63 @@ interface WeatherTheme {
 
 function getWeatherTheme(conditionId: number, isNight: boolean): WeatherTheme {
   if (conditionId >= 200 && conditionId < 300)
-    return { emoji: '⛈️', gradient: ['#0F172A', '#1E1B4B', '#312E81', '#1E1B4B'], accentColor: '#818CF8', label: 'Tormenta' };
+    return {
+      emoji: '⛈️',
+      gradient: ['#0F172A', '#1E1B4B', '#312E81', '#1E1B4B'],
+      accentColor: '#818CF8',
+      label: 'Tormenta',
+    };
   if (conditionId >= 300 && conditionId < 400)
-    return { emoji: '🌦️', gradient: ['#1E293B', '#0F172A', '#1E293B', '#0F172A'], accentColor: '#60A5FA', label: 'Llovizna' };
+    return {
+      emoji: '🌦️',
+      gradient: ['#1E293B', '#0F172A', '#1E293B', '#0F172A'],
+      accentColor: '#60A5FA',
+      label: 'Llovizna',
+    };
   if (conditionId >= 500 && conditionId < 600)
-    return { emoji: '🌧️', gradient: ['#1E3A8A', '#172554', '#0A0F1C', '#172554'], accentColor: '#93C5FD', label: 'Lluvia' };
+    return {
+      emoji: '🌧️',
+      gradient: ['#1E3A8A', '#172554', '#0A0F1C', '#172554'],
+      accentColor: '#93C5FD',
+      label: 'Lluvia',
+    };
   if (conditionId >= 600 && conditionId < 700)
-    return { emoji: '❄️', gradient: ['#0C4A6E', '#0369A1', '#0284C7', '#0369A1'], accentColor: '#BAE6FD', label: 'Nieve' };
+    return {
+      emoji: '❄️',
+      gradient: ['#0C4A6E', '#0369A1', '#0284C7', '#0369A1'],
+      accentColor: '#BAE6FD',
+      label: 'Nieve',
+    };
   if (conditionId >= 700 && conditionId < 800)
-    return { emoji: '🌫️', gradient: ['#1E293B', '#334155', '#475569', '#334155'], accentColor: '#94A3B8', label: 'Niebla' };
+    return {
+      emoji: '🌫️',
+      gradient: ['#1E293B', '#334155', '#475569', '#334155'],
+      accentColor: '#94A3B8',
+      label: 'Niebla',
+    };
   if (conditionId === 800) {
     if (isNight)
-      return { emoji: '🌙', gradient: ['#020617', '#0F172A', '#1E1B4B', '#0F172A'], accentColor: '#C084FC', label: 'Despejado' };
-    return { emoji: '☀️', gradient: ['#0EA5E9', '#2563EB', '#1D4ED8', '#2563EB'], accentColor: '#FCD34D', label: 'Soleado' };
+      return {
+        // emoji: '🌙',
+        lottie: require('@/assets/Lottie/Paperplane.json'),
+        gradient: ['#020617', '#0F172A', '#1E1B4B', '#0F172A'],
+        accentColor: '#84fca0',
+        label: 'Despejado',
+      };
+    return {
+      emoji: '☀️',
+      lottie: require('@/assets/Lottie/animated weather icons, sunny, rainy, cloudy..json'),
+      gradient: ['#0EA5E9', '#2563EB', '#1D4ED8', '#2563EB'],
+      accentColor: '#FCD34D',
+      label: 'Soleado',
+    };
   }
-  return { emoji: '⛅', gradient: ['#1E40AF', '#1D4ED8', '#1E3A8A', '#1D4ED8'], accentColor: '#93C5FD', label: 'Nublado' };
+  return {
+    emoji: '⛅',
+    gradient: ['#1E40AF', '#1D4ED8', '#1E3A8A', '#1D4ED8'],
+    accentColor: '#93C5FD',
+    label: 'Nublado',
+  };
 }
 
 function formatLocalTime(unixTimestamp: number, timezoneOffset: number): string {
@@ -95,21 +129,20 @@ export default function HomeScreen() {
     }
   };
 
-  const onRefresh = useCallback(() => { refetch(); }, [refetch]);
+  const onRefresh = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
   const headerOpacity = scrollY.interpolate({ inputRange: [0, 80], outputRange: [0, 1], extrapolate: 'clamp' });
 
   return (
     <LinearGradient colors={theme.gradient} locations={[0, 0.35, 0.7, 1]} style={styles.gradient}>
       <SafeAreaView style={styles.safeArea} edges={['top']}>
-
         {/* ── Sticky mini-header on scroll ── */}
         <Animated.View style={[styles.stickyHeader, { opacity: headerOpacity }]}>
           <BlurView intensity={60} tint="dark" style={StyleSheet.absoluteFill} />
           <Text style={styles.stickyCity}>{data?.name ?? city}</Text>
-          {data && (
-            <Text style={styles.stickyTemp}>{Math.round(data.main.temp)}°</Text>
-          )}
+          {data && <Text style={styles.stickyTemp}>{Math.round(data.main.temp)}°</Text>}
         </Animated.View>
 
         {/* ── Main Header ── */}
@@ -122,7 +155,9 @@ export default function HomeScreen() {
 
           <View style={styles.headerMeta}>
             <Ionicons name="location" size={12} color={theme.accentColor} />
-            <Text style={styles.headerCity} numberOfLines={1}>{data?.name ?? city}</Text>
+            <Text style={styles.headerCity} numberOfLines={1}>
+              {data?.name ?? city}
+            </Text>
             {data?.sys?.country ? <Text style={[styles.headerCountry]}>, {data.sys.country}</Text> : null}
           </View>
 
@@ -172,9 +207,7 @@ export default function HomeScreen() {
           {/* ── Loading ── */}
           {isLoading && (
             <View style={styles.centered}>
-              <View style={styles.loadingRing}>
-                <ActivityIndicator size="large" color="white" />
-              </View>
+              <LottieView source={require('@/assets/Lottie/loading.json')} autoPlay loop style={styles.loadingLottie} />
               <Text style={styles.loadingText}>Obteniendo el clima...</Text>
             </View>
           )}
@@ -196,26 +229,48 @@ export default function HomeScreen() {
             <>
               {/* Hero Temperature Block */}
               <View style={styles.heroBlock}>
-                <Text style={styles.heroEmoji}>{theme.emoji}</Text>
+                {theme.lottie ? (
+                  <LottieView source={theme.lottie} autoPlay loop style={styles.heroLottie} />
+                ) : (
+                  <Text style={styles.heroEmoji}>{theme.emoji}</Text>
+                )}
                 <Text style={styles.heroTemp}>{Math.round(data.main.temp)}°</Text>
-                <View style={[styles.conditionBadge, { backgroundColor: `${theme.accentColor}20`, borderColor: `${theme.accentColor}40` }]}>
+                <View
+                  style={[
+                    styles.conditionBadge,
+                    { backgroundColor: `${theme.accentColor}20`, borderColor: `${theme.accentColor}40` },
+                  ]}
+                >
                   <Text style={[styles.conditionText, { color: theme.accentColor }]}>
                     {data.weather[0].description.charAt(0).toUpperCase() + data.weather[0].description.slice(1)}
                   </Text>
                 </View>
                 <Text style={styles.heroRange}>
-                  ↑ {Math.round(data.main.temp_max)}°  ·  ↓ {Math.round(data.main.temp_min)}°
+                  ↑ {Math.round(data.main.temp_max)}° · ↓ {Math.round(data.main.temp_min)}°
                 </Text>
-                <Text style={styles.heroFeels}>
-                  Sensación: {Math.round(data.main.feels_like)}°C
-                </Text>
+                <Text style={styles.heroFeels}>Sensación: {Math.round(data.main.feels_like)}°C</Text>
               </View>
 
               {/* ── Quick Stats Row ── */}
               <View style={styles.statsGrid}>
-                <StatPill icon="water" value={`${data.main.humidity}%`} label="Humedad" accentColor={theme.accentColor} />
-                <StatPill icon="navigate" value={`${data.wind.speed} m/s`} label="Viento" accentColor={theme.accentColor} />
-                <StatPill icon="eye" value={`${(data.visibility / 1000).toFixed(0)} km`} label="Visibilidad" accentColor={theme.accentColor} />
+                <StatPill
+                  icon="water"
+                  value={`${data.main.humidity}%`}
+                  label="Humedad"
+                  accentColor={theme.accentColor}
+                />
+                <StatPill
+                  icon="navigate"
+                  value={`${data.wind.speed} m/s`}
+                  label="Viento"
+                  accentColor={theme.accentColor}
+                />
+                <StatPill
+                  icon="eye"
+                  value={`${(data.visibility / 1000).toFixed(0)} km`}
+                  label="Visibilidad"
+                  accentColor={theme.accentColor}
+                />
               </View>
 
               {/* ── Detail Cards ── */}
@@ -279,7 +334,12 @@ export default function HomeScreen() {
 
 // ─── Sub-components ────────────────────────────────────────────────────────
 
-function StatPill({ icon, value, label, accentColor }: {
+function StatPill({
+  icon,
+  value,
+  label,
+  accentColor,
+}: {
   icon: React.ComponentProps<typeof Ionicons>['name'];
   value: string;
   label: string;
@@ -297,7 +357,12 @@ function StatPill({ icon, value, label, accentColor }: {
   );
 }
 
-function DetailTile({ icon, label, value, accentColor }: {
+function DetailTile({
+  icon,
+  label,
+  value,
+  accentColor,
+}: {
   icon: React.ComponentProps<typeof Ionicons>['name'];
   label: string;
   value: string;
@@ -315,7 +380,12 @@ function DetailTile({ icon, label, value, accentColor }: {
   );
 }
 
-function SunRow({ icon, label, value, accentColor }: {
+function SunRow({
+  icon,
+  label,
+  value,
+  accentColor,
+}: {
   icon: React.ComponentProps<typeof Ionicons>['name'];
   label: string;
   value: string;
@@ -438,15 +508,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     gap: 16,
   },
-  loadingRing: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: GLASS_BG,
-    borderWidth: 1,
-    borderColor: GLASS_BORDER,
-    alignItems: 'center',
-    justifyContent: 'center',
+  loadingLottie: {
+    width: 140,
+    height: 140,
   },
   bigEmoji: { fontSize: 56 },
   loadingText: { color: 'rgba(255,255,255,0.55)', fontSize: 15, letterSpacing: 0.3 },
@@ -472,6 +536,10 @@ const styles = StyleSheet.create({
   heroEmoji: {
     fontSize: 80,
     marginBottom: 0,
+  },
+  heroLottie: {
+    width: 120,
+    height: 120,
   },
   heroTemp: {
     fontSize: 110,
