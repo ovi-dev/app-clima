@@ -9,7 +9,7 @@ import { ThemeColors } from '../types/themeColors';
  * depending in the current color scheme.
  */
 export const useWithAppTheme = <T,>(fn: (colorPalette: ThemeColors) => T) => {
-  const themeScheme = useColorScheme() ?? ThemeColorScheme.Light;
+  const themeScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
   const appThemeColors = AppThemeColors[themeScheme];
   return React.useMemo(() => fn(appThemeColors), [fn, appThemeColors]);
 };

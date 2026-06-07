@@ -1,12 +1,14 @@
-import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from '@react-navigation/native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Redirect, Stack } from 'expo-router';
+import { DarkTheme, DefaultTheme, Theme, ThemeProvider } from 'expo-router/react-navigation';
+import * as SplashScreenExpo from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import * as SystemUI from 'expo-system-ui';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
+import CustomSplashScreen from '@/components/ui/SplashScreen';
 import { fontConfig } from '@/constants/fontConfig';
 import { useOnboarding } from '@/hooks/use-onboarding';
 import { useColorScheme } from '@/theme/hooks/useColorScheme';
@@ -19,6 +21,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const themeColors = useThemeColors();
   const { completed: completado } = useOnboarding();
+  const [splashDone, setSplashDone] = useState(false);
 
   const baseTheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
   const navigationTheme: Theme = {
@@ -34,7 +37,19 @@ export default function RootLayout() {
     SystemUI.setBackgroundColorAsync(themeColors.general.background);
   }, [themeColors.general.background]);
 
+  // Ocultar el splash nativo una vez que las fuentes y el onboarding estén listos
+  useEffect(() => {
+    if (fontsLoaded && completado !== null) {
+      SplashScreenExpo.hide();
+    }
+  }, [fontsLoaded, completado]);
+
   if (!fontsLoaded || completado === null) return null;
+
+  // Mostrar el splash personalizado (Lottie) hasta que termine la animación
+  if (!splashDone) {
+    return <CustomSplashScreen onFinish={() => setSplashDone(true)} />;
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

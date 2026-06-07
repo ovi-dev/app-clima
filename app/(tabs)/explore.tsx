@@ -1,14 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ActivityIndicator, Dimensions, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useForecast } from '@/hooks/use-weather';
 import { useCityStore } from '@/store/city-store';
 import { ForecastItem } from '@/types/clima.type';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 // ─── Constants ─────────────────────────────────────────────────────────────
 
@@ -47,7 +46,6 @@ function getEmoji(conditionId: number, icon: string): string {
 
 function getTempBarWidth(tempMin: number, tempMax: number, absMin: number, absMax: number): number {
   const range = absMax - absMin || 1;
-  const barStart = ((tempMin - absMin) / range) * 100;
   const barWidth = ((tempMax - tempMin) / range) * 100;
   return Math.max(barWidth, 8);
 }
