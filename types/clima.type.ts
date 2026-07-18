@@ -11,6 +11,7 @@ export interface SavedCity {
 // Puedes buscar por coordenadas (GPS) o por nombre de ciudad.
 // TypeScript te obliga a elegir uno de los dos, nunca los dos a la vez.
 export type WeatherParams = { lat: number; lon: number } | { q: string };
+export type CoordinatesParams = { lat: number; lon: number };
 
 // ─── Respuesta: clima actual (/weather) ────────────────────────────────────
 export interface ClimaAPI {
@@ -59,6 +60,36 @@ export interface ForecastCity {
   timezone: number;
   sunrise: number;
   sunset: number;
+}
+
+export interface UVResponse {
+  lat: number;
+  lon: number;
+  date_iso: string;
+  date: number;
+  value: number;
+}
+
+export interface AirQualityResponse {
+  coord: Coord;
+  list: AirQualityItem[];
+}
+
+export interface AirQualityItem {
+  main: {
+    aqi: number;
+  };
+  components: {
+    co: number;
+    no: number;
+    no2: number;
+    o3: number;
+    so2: number;
+    pm2_5: number;
+    pm10: number;
+    nh3: number;
+  };
+  dt: number;
 }
 
 // ─── Tipos compartidos ─────────────────────────────────────────────────────

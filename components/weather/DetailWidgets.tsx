@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, type ViewStyle } from 'react-native';
 
 import { WidgetCard } from './WidgetCard';
 
@@ -38,13 +38,26 @@ function RunHour({ time, status, color }: { time: string; status: string; color:
 }
 
 // ─── AIR QUALITY & POLLEN ─────────────────────────────────────────────────
-export function AirQualityWidget() {
+export function AirQualityWidget({ aqi = 1 }: { aqi?: number }) {
+  const quality = aqi <= 1 ? 'Bueno' : aqi <= 2 ? 'Moderado' : aqi <= 3 ? 'Malo' : aqi <= 4 ? 'Muy malo' : 'Peligroso';
+  const progressStyle: ViewStyle = { width: `${Math.min(aqi * 25, 100)}%` };
+
   return (
     <WidgetCard style={styles.card}>
-      <Text style={styles.widgetTitle}>ICA</Text>
-      <Text style={styles.icaValue}>Bajo(33)</Text>
+      <View style={styles.icaHeader}>
+        <Text style={styles.widgetTitle}>ICA</Text>
+        <View style={styles.icaStatusPill}>
+          <Text style={styles.icaStatusText}>{quality}</Text>
+        </View>
+      </View>
+
+      <View style={styles.icaValueRow}>
+        <Text style={styles.icaValue}>{aqi}</Text>
+        <Text style={styles.icaDescription}>Calidad del aire</Text>
+      </View>
+
       <View style={styles.icaBarContainer}>
-        <View style={styles.icaBarFill} />
+        <View style={[styles.icaBarFill, progressStyle]} />
       </View>
     </WidgetCard>
   );
@@ -75,23 +88,39 @@ function PollenItem({ name, status, color }: { name: string; status: string; col
 
 // ─── DETAIL GRID ───────────────────────────────────────────────────────────
 interface DetailProps {
-  uv: string;
+  uvLabel: string;
+  uvValue: string;
   humidity: string;
   windSpeed: string;
+  windDirection?: string;
   dewPoint: string;
   pressure: string;
   visibility: string;
 }
 
-export function DetailGrid({ uv, humidity, windSpeed, dewPoint, pressure, visibility }: DetailProps) {
+export function DetailGrid({
+  uvLabel,
+  uvValue,
+  humidity,
+  windSpeed,
+  windDirection = 'N',
+  dewPoint,
+  pressure,
+  visibility,
+}: DetailProps) {
+  const uvPercentage = Math.min((Number(uvValue) / 11) * 100, 100);
+  const uvFillStyle: ViewStyle = { width: `${uvPercentage}%` };
+
   return (
     <View style={styles.detailGrid}>
       <DetailTile title="Índice UV" icon="sunny">
-        <Text style={styles.detailTextSmall}>Bajo resto del día</Text>
-        <Text style={styles.detailValueLarge}>{uv}</Text>
-        <View style={styles.uvBar} />
+        <Text style={styles.detailTextSmall}>{uvLabel}</Text>
+        <Text style={styles.detailValueLarge}>{uvValue}</Text>
+        <View style={styles.uvBar}>
+          <View style={[styles.uvBarFill, uvFillStyle]} />
+        </View>
       </DetailTile>
-      
+
       <DetailTile title="Humedad" icon="water">
         <Text style={styles.detailTextSmall}>Similar a ayer</Text>
         <Text style={styles.detailValueLarge}>{humidity}</Text>
@@ -99,7 +128,11 @@ export function DetailGrid({ uv, humidity, windSpeed, dewPoint, pressure, visibi
 
       <DetailTile title="Viento" icon="navigate">
         <Text style={styles.detailTextSmall}>Hay una ligera brisa</Text>
-        <View style={styles.compassContainer}>
+        <View style={styles.windDisplay}>
+          <View style={styles.windBadge}>
+            <Ionicons name="compass-outline" size={18} color="rgba(255,255,255,0.8)" />
+            <Text style={styles.windDirection}>{windDirection}</Text>
+          </View>
           <View style={styles.compassCenter}>
             <Text style={styles.compassValue}>{windSpeed}</Text>
             <Text style={styles.compassUnit}>km/h</Text>
@@ -159,11 +192,53 @@ const styles = StyleSheet.create({
   runHour: { alignItems: 'center', gap: 4 },
   runTimeText: { color: 'white', fontSize: 12 },
   runStatusText: { color: 'white', fontSize: 12 },
-  
+
   // Air Quality
-  icaValue: { color: 'white', fontSize: 24, fontWeight: '600', marginBottom: 12 },
-  icaBarContainer: { height: 8, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 4, overflow: 'hidden' },
-  icaBarFill: { width: '33%', height: '100%', backgroundColor: '#a3e635', borderRadius: 4 },
+  icaHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  icaStatusPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 999,
+    backgroundColor: 'rgba(163, 230, 53, 0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(163, 230, 53, 0.35)',
+  },
+  icaStatusText: {
+    color: '#d9f99d',
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.4,
+  },
+  icaValueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 10,
+  },
+  icaValue: { color: 'white', fontSize: 32, fontWeight: '700', lineHeight: 34 },
+  icaDescription: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  icaScale: { color: 'rgba(255,255,255,0.6)', fontSize: 12, fontWeight: '600', marginBottom: 4 },
+  icaBarContainer: {
+    height: 8,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 999,
+    overflow: 'hidden',
+  },
+  icaBarFill: {
+    height: '100%',
+    backgroundColor: '#a3e635',
+    borderRadius: 999,
+  },
 
   // Pollen
   pollenContent: { flexDirection: 'row', justifyContent: 'space-around', paddingTop: 8 },
@@ -181,19 +256,60 @@ const styles = StyleSheet.create({
   },
   detailTile: {
     width: '47%',
-    aspectRatio: 1,
+    minHeight: 180,
     marginHorizontal: 0,
     marginBottom: 0,
   },
   detailHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 8 },
   detailTitle: { color: 'rgba(255,255,255,0.7)', fontSize: 13, fontWeight: '500' },
-  detailContent: { flex: 1, justifyContent: 'space-between' },
+  detailContent: { flex: 1, justifyContent: 'flex-start' },
   detailTextSmall: { color: 'white', fontSize: 13, lineHeight: 18 },
-  detailValueLarge: { color: 'white', fontSize: 36, fontWeight: '500', marginTop: 12 },
-  detailValueMedium: { color: 'white', fontSize: 24, fontWeight: '600', marginTop: 16 },
-  uvBar: { height: 6, backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 3, marginTop: 'auto', overflow: 'hidden' },
-  compassContainer: { flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 12 },
-  compassCenter: { alignItems: 'center', justifyContent: 'center', width: 60, height: 60, borderRadius: 30, borderWidth: 2, borderColor: 'rgba(255,255,255,0.2)' },
-  compassValue: { color: 'white', fontSize: 18, fontWeight: '600' },
-  compassUnit: { color: 'rgba(255,255,255,0.7)', fontSize: 10 },
+  detailValueLarge: { color: 'white', fontSize: 28, fontWeight: '500', marginTop: 12 },
+  detailValueMedium: { color: 'white', fontSize: 22, fontWeight: '600', marginTop: 16 },
+  uvBar: {
+    height: 6,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 3,
+    marginTop: 'auto',
+    overflow: 'hidden',
+  },
+  uvBarFill: {
+    height: '100%',
+    backgroundColor: '#fbbf24',
+    borderRadius: 3,
+  },
+  windDisplay: {
+    flex: 1,
+    justifyContent: 'space-between',
+    marginTop: 12,
+  },
+  windBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,255,255,0.08)',
+  },
+  windDirection: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 0.8,
+  },
+  compassCenter: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    width: 92,
+    height: 92,
+    borderRadius: 46,
+    borderWidth: 2,
+    borderColor: 'rgba(124, 58, 237, 0.45)',
+    backgroundColor: 'rgba(124, 58, 237, 0.12)',
+  },
+  compassValue: { color: 'white', fontSize: 24, fontWeight: '700' },
+  compassUnit: { color: 'rgba(255,255,255,0.7)', fontSize: 11, marginTop: 2 },
 });

@@ -1,10 +1,19 @@
-import { ClimaAPI, ForecastAPI, WeatherParams } from '@/types/clima.type';
+import {
+  AirQualityResponse,
+  ClimaAPI,
+  CoordinatesParams,
+  ForecastAPI,
+  UVResponse,
+  WeatherParams,
+} from '@/types/clima.type';
 import api from './axios';
 
 // Las rutas de la API centralizadas: si cambian, solo tocas aquí.
 const endpoints = {
   currentWeather: '/weather',
   forecast: '/forecast',
+  uvIndex: '/uvi',
+  airQuality: '/air_pollution',
 } as const;
 
 /**
@@ -24,5 +33,21 @@ export const getCurrentWeather = async (params: WeatherParams): Promise<ClimaAPI
  */
 export const getForecast = async (params: WeatherParams): Promise<ForecastAPI> => {
   const { data } = await api.get<ForecastAPI>(endpoints.forecast, { params });
+  return data;
+};
+
+/**
+ * Obtiene el índice UV usando el endpoint compatible de OpenWeather.
+ */
+export const getCurrentUV = async (params: CoordinatesParams): Promise<UVResponse> => {
+  const { data } = await api.get<UVResponse>(endpoints.uvIndex, { params });
+  return data;
+};
+
+/**
+ * Obtiene la calidad del aire (ICA) usando OpenWeather Air Pollution.
+ */
+export const getAirQuality = async (params: CoordinatesParams): Promise<AirQualityResponse> => {
+  const { data } = await api.get<AirQualityResponse>(endpoints.airQuality, { params });
   return data;
 };

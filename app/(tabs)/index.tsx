@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Animated, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -9,7 +9,7 @@ import { DailyForecast } from '@/components/weather/DailyForecast';
 import { AirQualityWidget, DetailGrid, PollenWidget, RunSuggestionWidget } from '@/components/weather/DetailWidgets';
 import { HourlyForecast } from '@/components/weather/HourlyForecast';
 import { WeatherHero } from '@/components/weather/WeatherHero';
-import { useCurrentWeather, useForecast } from '@/hooks/use-weather';
+import { useAirQuality, useCurrentUV, useCurrentWeather, useForecast } from '@/hooks/use-weather';
 import { useCityStore } from '@/store/city-store';
 
 export default function HomeScreen() {
@@ -18,13 +18,31 @@ export default function HomeScreen() {
 
   const { data: currentData, isLoading: loadingCurrent, refetch: refetchCurrent } = useCurrentWeather({ q: city });
   const { data: forecastData, isLoading: loadingForecast, refetch: refetchForecast } = useForecast({ q: city });
+  const {
+    data: uvData,
+    isLoading: loadingUV,
+    refetch: refetchUV,
+  } = useCurrentUV(
+    currentData ? { lat: currentData.coord.lat, lon: currentData.coord.lon } : { lat: 0, lon: 0 },
+    Boolean(currentData),
+  );
+  const {
+    data: airQualityData,
+    isLoading: loadingAirQuality,
+    refetch: refetchAirQuality,
+  } = useAirQuality(
+    currentData ? { lat: currentData.coord.lat, lon: currentData.coord.lon } : { lat: 0, lon: 0 },
+    Boolean(currentData),
+  );
 
-  const isRefetching = loadingCurrent || loadingForecast;
+  const isRefetching = loadingCurrent || loadingForecast || loadingUV || loadingAirQuality;
 
   const onRefresh = useCallback(() => {
     refetchCurrent();
     refetchForecast();
-  }, [refetchCurrent, refetchForecast]);
+    refetchUV();
+    refetchAirQuality();
+  }, [refetchCurrent, refetchForecast, refetchUV, refetchAirQuality]);
 
   const headerOpacity = scrollY.interpolate({ inputRange: [0, 80], outputRange: [0, 1], extrapolate: 'clamp' });
 
@@ -37,6 +55,24 @@ export default function HomeScreen() {
       </LinearGradient>
     );
   }
+
+  const uvValue = uvData?.value ?? 0;
+  const uvLabel =
+    uvValue <= 2
+      ? 'Riesgo bajo'
+      : uvValue <= 5
+        ? 'Riesgo moderado'
+        : uvValue <= 7
+          ? 'Riesgo alto'
+          : uvValue <= 10
+            ? 'Riesgo muy alto'
+            : 'Riesgo extremo';
+  const aqiValue = airQualityData?.list[0]?.main.aqi ?? 0;
+  const windDirection = (() => {
+    const directions = ['N', 'NE', 'E', 'SE', 'S', 'SO', 'O', 'NO'];
+    const index = Math.round((currentData.wind.deg % 360) / 45) % directions.length;
+    return directions[index];
+  })();
 
   return (
     <LinearGradient colors={['#07101E', '#0A1526', '#020617']} locations={[0, 0.4, 1]} style={styles.gradient}>
@@ -54,12 +90,16 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: false })}
         scrollEventThrottle={16}
-        refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor="rgba(255,255,255,0.6)" />}
+        refreshControl={
+          <RefreshControl refreshing={isRefetching} onRefresh={onRefresh} tintColor="rgba(255,255,255,0.6)" />
+        }
       >
         <WeatherHero
           city={currentData.name}
           temp={currentData.main.temp}
-          condition={currentData.weather[0]?.description.charAt(0).toUpperCase() + currentData.weather[0]?.description.slice(1)}
+          condition={
+            currentData.weather[0]?.description.charAt(0).toUpperCase() + currentData.weather[0]?.description.slice(1)
+          }
           tempMax={currentData.main.temp_max}
           tempMin={currentData.main.temp_min}
           feelsLike={currentData.main.feels_like}
@@ -72,14 +112,16 @@ export default function HomeScreen() {
 
         <RunSuggestionWidget />
 
-        <AirQualityWidget />
+        <AirQualityWidget aqi={aqiValue} />
 
         <PollenWidget />
 
         <DetailGrid
-          uv="Bajo"
+          uvLabel={uvLabel}
+          uvValue={uvValue.toFixed(1)}
           humidity={`${currentData.main.humidity}%`}
-          windSpeed={`${currentData.wind.speed}`}
+          windSpeed={currentData.wind.speed.toFixed(1)}
+          windDirection={windDirection}
           dewPoint="6°"
           pressure={`${currentData.main.pressure} mb`}
           visibility={`${(currentData.visibility / 1000).toFixed(2)} km`}

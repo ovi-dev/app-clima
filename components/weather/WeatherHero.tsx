@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 interface WeatherHeroProps {
@@ -25,16 +24,23 @@ export function WeatherHero({
   feelsLike,
   summaryText,
 }: WeatherHeroProps) {
+  const currentHour = new Date().getHours();
+  const isDaytime = currentHour >= 6 && currentHour < 19;
+  const heroImage = isDaytime ? require('@/assets/images/dia.png') : require('@/assets/images/starry_night_hero.png');
+  const primaryTextColor = isDaytime ? '#0B1220' : '#FFFFFF';
+  const secondaryTextColor = isDaytime ? 'rgba(11, 18, 32, 0.78)' : 'rgba(255,255,255,0.9)';
+  const iconColor = isDaytime ? '#0B1220' : '#FFFFFF';
+
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image
-          source={require('@/assets/images/starry_night_hero.png')}
-          style={StyleSheet.absoluteFill}
-          contentFit="cover"
-        />
+        <Image source={heroImage} style={StyleSheet.absoluteFill} contentFit="cover" />
         <LinearGradient
-          colors={['transparent', 'rgba(10,15,30,0.8)', '#07101E']}
+          colors={
+            isDaytime
+              ? ['transparent', 'rgba(255,255,255,0.18)', 'rgba(14, 116, 144, 0.78)']
+              : ['transparent', 'rgba(10,15,30,0.8)', '#07101E']
+          }
           style={StyleSheet.absoluteFill}
           locations={[0.4, 0.8, 1]}
         />
@@ -42,22 +48,24 @@ export function WeatherHero({
 
       <View style={styles.content}>
         <View style={styles.locationContainer}>
-          <Ionicons name="location-outline" size={16} color="white" />
-          <Text style={styles.cityText}>{city}</Text>
+          <Ionicons name="location-outline" size={16} color={iconColor} />
+          <Text style={[styles.cityText, { color: primaryTextColor }]}>{city}</Text>
         </View>
 
-        <Text style={styles.tempText}>{Math.round(temp)}°</Text>
-        <Text style={styles.conditionText}>{condition}</Text>
+        <Text style={[styles.tempText, { color: primaryTextColor }]}>{Math.round(temp)}°</Text>
+        <Text style={[styles.conditionText, { color: primaryTextColor }]}>{condition}</Text>
 
-        <Text style={styles.rangeText}>
+        <Text style={[styles.rangeText, { color: primaryTextColor }]}>
           ↑ {Math.round(tempMax)}° / ↓ {Math.round(tempMin)}°
         </Text>
-        <Text style={styles.feelsLikeText}>Sensación térmica {Math.round(feelsLike)}°</Text>
+        <Text style={[styles.feelsLikeText, { color: primaryTextColor }]}>
+          Sensación térmica {Math.round(feelsLike)}°
+        </Text>
 
         {/* Separator / Spacer to push summary down if needed, but in the screenshot summary is right above the hourly widget */}
         <View style={styles.spacer} />
 
-        <Text style={styles.summaryText}>{summaryText}</Text>
+        <Text style={[styles.summaryText, { color: secondaryTextColor }]}>{summaryText}</Text>
       </View>
     </View>
   );
