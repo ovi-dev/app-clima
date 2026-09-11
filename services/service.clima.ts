@@ -3,6 +3,7 @@ import {
   ClimaAPI,
   CoordinatesParams,
   ForecastAPI,
+  SavedCity,
   UVResponse,
   WeatherParams,
 } from '@/types/clima.type';
@@ -14,7 +15,31 @@ const endpoints = {
   forecast: '/forecast',
   uvIndex: '/uvi',
   airQuality: '/air_pollution',
+  geocoding: 'https://api.openweathermap.org/geo/1.0/direct',
 } as const;
+
+interface GeocodingResult {
+  name: string;
+  lat: number;
+  lon: number;
+  country: string;
+  state?: string;
+}
+
+export const searchCities = async (query: string): Promise<SavedCity[]> => {
+  const { data } = await api.get<GeocodingResult[]>(endpoints.geocoding, {
+    params: { q: query, limit: 5 },
+  });
+
+  return data.map(city => ({
+    id: `${city.lat.toFixed(4)},${city.lon.toFixed(4)}`,
+    name: city.name,
+    lat: city.lat,
+    lon: city.lon,
+    state: city.state,
+    country: city.country,
+  }));
+};
 
 /**
  * Obtiene el clima actual.

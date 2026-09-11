@@ -16,6 +16,8 @@ import { useThemeColors } from '@/theme/hooks/useThemeColors';
 
 const queryClient = new QueryClient();
 
+SplashScreenExpo.preventAutoHideAsync();
+
 export default function RootLayout() {
   const [fontsLoaded] = useFonts(fontConfig);
   const colorScheme = useColorScheme();
@@ -40,7 +42,7 @@ export default function RootLayout() {
   // Ocultar el splash nativo una vez que las fuentes y el onboarding estén listos
   useEffect(() => {
     if (fontsLoaded && completado !== null) {
-      SplashScreenExpo.hide();
+      SplashScreenExpo.hideAsync();
     }
   }, [fontsLoaded, completado]);
 

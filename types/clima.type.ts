@@ -4,6 +4,7 @@ export interface SavedCity {
   name: string;
   lat: number;
   lon: number;
+  state?: string;
   country?: string;
 }
 

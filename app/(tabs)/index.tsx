@@ -1,8 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Animated, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { Animated, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DailyForecast } from '@/components/weather/DailyForecast';
@@ -11,13 +12,27 @@ import { HourlyForecast } from '@/components/weather/HourlyForecast';
 import { WeatherHero } from '@/components/weather/WeatherHero';
 import { useAirQuality, useCurrentUV, useCurrentWeather, useForecast } from '@/hooks/use-weather';
 import { useCityStore } from '@/store/city-store';
+import { WeatherParams } from '@/types/clima.type';
 
 export default function HomeScreen() {
-  const { city } = useCityStore();
+  const router = useRouter();
+  const { city, activeLat, activeLon, hasHydrated } = useCityStore();
   const [scrollY] = useState(() => new Animated.Value(0));
+  const weatherParams: WeatherParams =
+    activeLat !== null && activeLon !== null ? { lat: activeLat, lon: activeLon } : { q: city };
 
-  const { data: currentData, isLoading: loadingCurrent, refetch: refetchCurrent } = useCurrentWeather({ q: city });
-  const { data: forecastData, isLoading: loadingForecast, refetch: refetchForecast } = useForecast({ q: city });
+  const {
+    data: currentData,
+    isLoading: loadingCurrent,
+    isError: currentError,
+    refetch: refetchCurrent,
+  } = useCurrentWeather(weatherParams, hasHydrated);
+  const {
+    data: forecastData,
+    isLoading: loadingForecast,
+    isError: forecastError,
+    refetch: refetchForecast,
+  } = useForecast(weatherParams, hasHydrated);
   const {
     data: uvData,
     isLoading: loadingUV,
@@ -46,11 +61,32 @@ export default function HomeScreen() {
 
   const headerOpacity = scrollY.interpolate({ inputRange: [0, 80], outputRange: [0, 1], extrapolate: 'clamp' });
 
-  if (!currentData || !forecastData) {
+  if (!hasHydrated || loadingCurrent || loadingForecast) {
     return (
       <LinearGradient colors={['#0F172A', '#020617']} style={styles.gradient}>
         <View style={styles.centered}>
           <Text style={styles.loadingText}>Cargando cielo estrellado...</Text>
+        </View>
+      </LinearGradient>
+    );
+  }
+
+  if (currentError || forecastError || !currentData || !forecastData) {
+    return (
+      <LinearGradient colors={['#0F172A', '#020617']} style={styles.gradient}>
+        <View style={styles.centered}>
+          <Ionicons name="cloud-offline-outline" size={44} color="rgba(255,255,255,0.55)" />
+          <Text style={styles.errorTitle}>No pudimos cargar el clima</Text>
+          <Text style={styles.errorText}>Comprueba tu conexión o selecciona otra ciudad.</Text>
+          <View style={styles.errorActions}>
+            <Pressable onPress={() => router.navigate('/explore')} style={styles.secondaryButton}>
+              <Text style={styles.secondaryButtonText}>Cambiar ciudad</Text>
+            </Pressable>
+            <Pressable onPress={onRefresh} style={styles.retryButton}>
+              <Ionicons name="refresh" size={17} color="#07101E" />
+              <Text style={styles.retryButtonText}>Reintentar</Text>
+            </Pressable>
+          </View>
         </View>
       </LinearGradient>
     );
@@ -96,6 +132,7 @@ export default function HomeScreen() {
       >
         <WeatherHero
           city={currentData.name}
+          country={currentData.sys.country}
           temp={currentData.main.temp}
           condition={
             currentData.weather[0]?.description.charAt(0).toUpperCase() + currentData.weather[0]?.description.slice(1)
@@ -104,6 +141,7 @@ export default function HomeScreen() {
           tempMin={currentData.main.temp_min}
           feelsLike={currentData.main.feels_like}
           summaryText={`Cielo mayormente despejado. Mínima de ${Math.round(currentData.main.temp_min)} C.`}
+          onCityPress={() => router.navigate('/explore')}
         />
 
         <HourlyForecast data={forecastData.list} />
@@ -144,10 +182,52 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 24,
+    gap: 12,
   },
   loadingText: {
     color: 'rgba(255,255,255,0.6)',
     fontSize: 16,
+  },
+  errorTitle: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  errorText: {
+    color: 'rgba(255,255,255,0.55)',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  errorActions: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+  },
+  secondaryButton: {
+    paddingHorizontal: 16,
+    height: 44,
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 8,
+  },
+  secondaryButtonText: {
+    color: 'white',
+    fontWeight: '600',
+  },
+  retryButton: {
+    height: 44,
+    paddingHorizontal: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+    backgroundColor: '#7DD3FC',
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#07101E',
+    fontWeight: '700',
   },
   stickyHeader: {
     position: 'absolute',

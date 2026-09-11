@@ -1,13 +1,17 @@
 import LottieView from 'lottie-react-native';
 import { StyleSheet, View } from 'react-native';
 
+import { useThemeColors } from '@/theme/hooks/useThemeColors';
+
 interface SplashScreenProps {
   onFinish?: (isCancelled: boolean) => void;
 }
 
 export default function SplashScreen({ onFinish }: SplashScreenProps) {
+  const themeColors = useThemeColors();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.splash.background }]}>
       <LottieView
         source={require('@/assets/Lottie/loading.json')}
         onAnimationFinish={onFinish}
@@ -25,7 +29,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#000',
   },
   lottie: {
     width: 200,

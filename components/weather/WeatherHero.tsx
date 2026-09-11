@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 interface WeatherHeroProps {
   city: string;
@@ -12,6 +12,7 @@ interface WeatherHeroProps {
   tempMin: number;
   feelsLike: number;
   summaryText: string;
+  onCityPress?: () => void;
 }
 
 export function WeatherHero({
@@ -23,6 +24,7 @@ export function WeatherHero({
   tempMin,
   feelsLike,
   summaryText,
+  onCityPress,
 }: WeatherHeroProps) {
   const currentHour = new Date().getHours();
   const isDaytime = currentHour >= 6 && currentHour < 19;
@@ -47,10 +49,17 @@ export function WeatherHero({
       </View>
 
       <View style={styles.content}>
-        <View style={styles.locationContainer}>
+        <Pressable
+          onPress={onCityPress}
+          disabled={!onCityPress}
+          style={({ pressed }) => [styles.locationContainer, pressed && styles.locationPressed]}
+          accessibilityRole={onCityPress ? 'button' : undefined}
+          accessibilityLabel={onCityPress ? 'Cambiar ciudad' : undefined}
+        >
           <Ionicons name="location-outline" size={16} color={iconColor} />
           <Text style={[styles.cityText, { color: primaryTextColor }]}>{city}</Text>
-        </View>
+          {onCityPress && <Ionicons name="chevron-down" size={15} color={iconColor} />}
+        </Pressable>
 
         <Text style={[styles.tempText, { color: primaryTextColor }]}>{Math.round(temp)}°</Text>
         <Text style={[styles.conditionText, { color: primaryTextColor }]}>{condition}</Text>
@@ -95,6 +104,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 8,
     gap: 6,
+  },
+  locationPressed: {
+    opacity: 0.6,
   },
   cityText: {
     color: 'white',

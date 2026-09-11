@@ -9,10 +9,12 @@ interface CityState {
   activeLat: number | null;
   activeLon: number | null;
   savedCities: SavedCity[];
-  setCity: (city: string, lat?: number, lon?: number) => void;
+  hasHydrated: boolean;
+  selectCity: (city: SavedCity) => void;
   addSavedCity: (city: SavedCity) => void;
   removeSavedCity: (id: string) => void;
   isSaved: (id: string) => boolean;
+  setHasHydrated: (hasHydrated: boolean) => void;
 }
 
 export const useCityStore = create<CityState>()(
@@ -22,27 +24,35 @@ export const useCityStore = create<CityState>()(
       activeLat: null,
       activeLon: null,
       savedCities: [],
+      hasHydrated: false,
 
-      setCity: (city, lat, lon) =>
-        set({ city, activeLat: lat ?? null, activeLon: lon ?? null }),
+      selectCity: selectedCity =>
+        set({ city: selectedCity.name, activeLat: selectedCity.lat, activeLon: selectedCity.lon }),
 
-      addSavedCity: (newCity) =>
-        set((state) => {
-          if (state.savedCities.some((c) => c.id === newCity.id)) return state;
+      addSavedCity: newCity =>
+        set(state => {
+          if (state.savedCities.some(c => c.id === newCity.id)) return state;
           return { savedCities: [...state.savedCities, newCity] };
         }),
 
-      removeSavedCity: (id) =>
-        set((state) => ({
-          savedCities: state.savedCities.filter((c) => c.id !== id),
+      removeSavedCity: id =>
+        set(state => ({
+          savedCities: state.savedCities.filter(c => c.id !== id),
         })),
 
-      isSaved: (id) => get().savedCities.some((c) => c.id === id),
+      isSaved: id => get().savedCities.some(c => c.id === id),
+      setHasHydrated: hasHydrated => set({ hasHydrated }),
     }),
     {
-      // Nombre nuevo → Zustand ignora el store viejo y empieza limpio
       name: 'city-store-v2',
       storage: createJSONStorage(() => AsyncStorage),
+      partialize: ({ city, activeLat, activeLon, savedCities }) => ({
+        city,
+        activeLat,
+        activeLon,
+        savedCities,
+      }),
+      onRehydrateStorage: () => state => state?.setHasHydrated(true),
     },
   ),
 );
