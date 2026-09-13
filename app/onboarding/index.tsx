@@ -1,13 +1,7 @@
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
-import Animated, {
-  Extrapolation,
-  interpolate,
-  useAnimatedStyle,
-  useSharedValue,
-} from 'react-native-reanimated';
+import Animated, { Extrapolation, interpolate, useAnimatedStyle, useSharedValue } from 'react-native-reanimated';
 import Carousel, { ICarouselInstance } from 'react-native-reanimated-carousel';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -49,7 +43,6 @@ export default function OnboardingScreen() {
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  const router = useRouter();
   const { completeOnboarding: completarOnboarding } = useOnboarding();
 
   const carouselRef = useRef<ICarouselInstance>(null);
@@ -57,21 +50,17 @@ export default function OnboardingScreen() {
   const progress = useSharedValue(0);
 
   const isLast = step === STEPS.length - 1;
-  const carouselHeight = Math.min(Math.max(height * 0.70, 520), 700);
+  const carouselHeight = Math.min(Math.max(height * 0.7, 520), 700);
 
-  const handleNext = async () => {
+  const handleNext = () => {
     if (isLast) {
-      await completarOnboarding();
-      router.replace('/(tabs)');
+      completarOnboarding();
       return;
     }
     carouselRef.current?.scrollTo({ count: 1, animated: true });
   };
 
-  const handleSkip = async () => {
-    await completarOnboarding();
-    router.replace('/(tabs)');
-  };
+  const handleSkip = () => completarOnboarding();
 
   return (
     <View style={styles.container}>
@@ -95,12 +84,7 @@ export default function OnboardingScreen() {
             parallaxScrollingOffset: 40,
           }}
           renderItem={({ item, animationValue }) => (
-            <CarouselItem
-              item={item}
-              animationValue={animationValue}
-              width={width}
-              styles={styles}
-            />
+            <CarouselItem item={item} animationValue={animationValue} width={width} styles={styles} />
           )}
         />
       </View>
@@ -137,12 +121,7 @@ const CarouselItem = ({ item, animationValue, width, styles }: any) => {
   return (
     <View style={[styles.page, { width }]}>
       <Animated.View style={[styles.imageContainer, animatedImageStyle]}>
-        <Image
-          source={item.image}
-          style={styles.image}
-          contentFit="cover"
-          transition={300}
-        />
+        <Image source={item.image} style={styles.image} contentFit="cover" transition={300} />
       </Animated.View>
 
       <Animated.View style={[styles.textContainer, animatedTextStyle]}>

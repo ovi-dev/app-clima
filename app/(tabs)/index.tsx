@@ -3,7 +3,7 @@ import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Animated, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Animated, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DailyForecast } from '@/components/weather/DailyForecast';
@@ -65,7 +65,8 @@ export default function HomeScreen() {
     return (
       <LinearGradient colors={['#0F172A', '#020617']} style={styles.gradient}>
         <View style={styles.centered}>
-          <Text style={styles.loadingText}>Cargando cielo estrellado...</Text>
+          <ActivityIndicator size="large" color="#7DD3FC" />
+          <Text style={styles.loadingText}>Actualizando el pronóstico...</Text>
         </View>
       </LinearGradient>
     );

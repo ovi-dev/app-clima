@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 import { useThemeColors } from '@/theme/hooks/useThemeColors';
 
 interface SplashScreenProps {
-  onFinish?: (isCancelled: boolean) => void;
+  onFinish: () => void;
 }
 
 export default function SplashScreen({ onFinish }: SplashScreenProps) {
@@ -14,7 +14,7 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
     <View style={[styles.container, { backgroundColor: themeColors.splash.background }]}>
       <LottieView
         source={require('@/assets/Lottie/loading.json')}
-        onAnimationFinish={onFinish}
+        onAnimationFinish={() => onFinish()}
         resizeMode="cover"
         autoPlay
         loop={false}

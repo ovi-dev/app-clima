@@ -1,7 +1,4 @@
-import {
-  DEV_FORCE_ONBOARDING, // Flag de desarrollo: si es true, siempre muestra el onboarding
-  useOnboardingStore, // Store de Zustand con el estado persistido del onboarding
-} from '@/store/onboarding-store';
+import { useOnboardingStore } from '@/store/onboarding-store';
 
 export function useOnboarding() {
   // true si el usuario ya completó el onboarding (persistido en AsyncStorage)
@@ -17,9 +14,5 @@ export function useOnboarding() {
   // mostrar una pantalla incorrecta mientras se lee AsyncStorage
   if (!rehidratado) return { completed: null, completeOnboarding: completarOnboarding };
 
-  // En desarrollo, fuerza que el onboarding siempre se muestre (completed: false)
-  if (DEV_FORCE_ONBOARDING) return { completed: false, completeOnboarding: completarOnboarding };
-
-  // En producción, devuelve el valor real: si el usuario completó el onboarding o no
   return { completed: completado, completeOnboarding: completarOnboarding };
 }
